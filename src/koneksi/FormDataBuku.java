@@ -26,6 +26,7 @@ private ResultSet rss;//untuk penampung data dari database
     }
     private void InitTable(){
         model=new DefaultTableModel();
+        model.addColumn("id");
         model.addColumn("Judul");
         model.addColumn("PENULIS");
         model.addColumn("HARGA");
@@ -34,14 +35,15 @@ private ResultSet rss;//untuk penampung data dari database
     
     private void TampilData(){
         try{
-            String sql="SELECT * FROM PRAKTIKUM_VISUAL";
+            String sql="SELECT * FROM buku";
             stt=con.createStatement();
             rss=stt.executeQuery(sql);
             while(rss.next()){
-                Object[]o=new Object[3];
-                o[0]=rss.getString("judul");
-                o[1]=rss.getString("penulis");
-                o[2]=rss.getInt("harga");
+                Object[]o=new Object[4];
+                o[0]=rss.getString("id");
+                o[1]=rss.getString("judul");
+                o[2]=rss.getString("penulis");
+                o[3]=rss.getInt("harga");
                 model.addRow(o);
             }
         }catch(SQLException e){
@@ -49,27 +51,10 @@ private ResultSet rss;//untuk penampung data dari database
         }
     }
     
-//    private void HapusData(){
-//        try{
-//            String sql="delete from rumahsakit where";
-//            stt=con.createStatement();
-//            rss=stt.executeQuery(sql);
-//            while(rss.next()){
-//                Object[]o=new Object[3];
-//                o[0]=rss.getString("judul");
-//                o[1]=rss.getString("penulis");
-//                o[2]=rss.getInt("harga");
-//                model.addRow(o);
-//            }
-//        }catch(SQLException e){
-//            System.out.println(e.getMessage());
-//        }
-//    }
-    
     private void TambahData(String judul,String penulis,String harga){
         try{
             String sql=
-                    "INSERT INTO PRAKTIKUM_VISUAL VALUES (NULL,'"+judul+"','"+penulis+"',"+harga+")";
+                    "INSERT INTO buku VALUES (NULL,'"+judul+"','"+penulis+"',"+harga+")";
             stt=con.createStatement();
             stt.executeUpdate(sql);
             model.addRow(new Object[]{judul,penulis,harga});
@@ -78,6 +63,66 @@ private ResultSet rss;//untuk penampung data dari database
             System.out.println(e.getMessage());
 }
     }
+    public boolean UbahData(String id,String judul,String penulis,String harga){
+                try{
+                    String sql = "UPDATE buku set judul ='"+judul
+                            +"',penulis='"+penulis+"',harga="+harga
+                            +" WHERE id="+id+";";
+                    stt = con.createStatement();
+                    stt.executeUpdate(sql);
+                    return true;
+                }catch(SQLException e){
+                    System.out.println(e.getMessage());
+                    return false;
+                }
+            }
+            
+            public boolean HapusData(String id){
+                try{
+                    String sql = "DELETE FROM buku WHERE id="+id+";";
+                    stt = con.createStatement();
+                    stt.executeUpdate(sql);
+                    return true;
+                }catch(SQLException e){
+                    System.out.println(e.getMessage());
+                    return false;
+                }
+                
+            }
+            private void PencarianData(String by,String cari){
+                try{
+                    String sql = "SELECT * FROM buku where "+by+" LIKE '%"+cari+"%';";
+                    stt = con.createStatement();
+                    rss = stt.executeQuery(sql);
+                    while(rss.next()){
+                        Object[] data = new Object[4];
+                        data[0] = rss.getString("id");
+                        data[1] = rss.getString("judul");
+                        data[2] = rss.getString("penulis");
+                        data[3] = rss.getInt("harga");
+                        model.addRow(data);
+                    }
+            } catch(Exception e){
+                System.out.println(e.getMessage());
+            }
+           }
+            
+            public boolean validasi(String judul,String penulis){
+                try{
+                    stt=con.createStatement();
+                    String sql="Select * from buku where judul='"+judul+"' and penulis='"+penulis+"';";
+                    rss=stt.executeQuery(sql);
+                    if(rss.next())
+                        return true;
+                    else
+                        return false;
+                }
+                catch(SQLException e){
+                    System.out.println(e.getMessage());
+                    return false;
+                }
+                
+            }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -90,7 +135,7 @@ private ResultSet rss;//untuk penampung data dari database
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -130,25 +175,25 @@ private ResultSet rss;//untuk penampung data dari database
 
         jPanel1.setBackground(new java.awt.Color(255, 51, 51));
 
-        jLabel4.setFont(new java.awt.Font("Book Antiqua", 0, 18)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("FORM DATA BUKU");
+        jLabel6.setFont(new java.awt.Font("Tahoma", 3, 18)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Form Data Buku");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(112, 112, 112)
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(143, 143, 143))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jLabel6)
+                .addContainerGap(12, Short.MAX_VALUE))
         );
 
         jPanel2.setBackground(new java.awt.Color(255, 51, 51));
@@ -178,11 +223,11 @@ private ResultSet rss;//untuk penampung data dari database
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(29, 29, 29)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(tjudul)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(tharga)
-                    .addComponent(cmbpenulis, 0, 236, Short.MAX_VALUE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(cmbpenulis, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tjudul))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -253,6 +298,11 @@ private ResultSet rss;//untuk penampung data dari database
                 return types [columnIndex];
             }
         });
+        jTable2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable2MouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(jTable2);
 
         jLabel5.setText("Search");
@@ -271,29 +321,29 @@ private ResultSet rss;//untuk penampung data dari database
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(19, 19, 19)
-                                .addComponent(btnsimpan))
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnubah)
-                            .addComponent(tcari, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(23, 23, 23)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnhapus)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnkeluar))
-                            .addComponent(by, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
-                .addContainerGap())
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(19, 19, 19)
+                                    .addComponent(btnsimpan))
+                                .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(btnubah)
+                                .addComponent(tcari, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(23, 23, 23)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(btnhapus)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(btnkeluar))
+                                .addComponent(by, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -332,7 +382,15 @@ private ResultSet rss;//untuk penampung data dari database
         String judul=tjudul.getText();
         String penulis=cmbpenulis.getSelectedItem().toString();
         String harga=tharga.getText();
-        TambahData(judul,penulis,harga);
+        if(validasi(judul, penulis)){
+            JOptionPane.showMessageDialog(null, "Data Sudah Ada");
+        }
+        else{
+            TambahData(judul,penulis,harga);
+            InitTable();TampilData();
+            JOptionPane.showMessageDialog(null, "berhasil Simpan Data");
+        }
+        
     }//GEN-LAST:event_btnsimpanActionPerformed
 
     private void btnkeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnkeluarActionPerformed
@@ -342,13 +400,13 @@ private ResultSet rss;//untuk penampung data dari database
 
     private void btnhapusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnhapusActionPerformed
         // TODO add your handling code here:
-        if(jTable2.getSelectedRow()<0){
-            JOptionPane.showMessageDialog(null ,"Pilih data yang akan dihapus !!!");
-        }
-         else{
         int baris = jTable2.getSelectedRow();
-        model.removeRow(baris);
-        }
+        String id = jTable2.getValueAt(baris,0).toString();
+        if(HapusData(id))
+            JOptionPane.showMessageDialog(null, "Data Sudah Data");
+        else
+            JOptionPane.showConfirmDialog(null, "Berhasil Hapus Data");
+        InitTable();TampilData();
     }//GEN-LAST:event_btnhapusActionPerformed
 
     private void tcariKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tcariKeyPressed
@@ -358,17 +416,16 @@ private ResultSet rss;//untuk penampung data dari database
         String cari=by.getSelectedItem().toString();
         
             try{
-                String sql="SELECT * FROM praktikum_visual where "+cari+" like '%"+tcari.getText()+"%'";
+                String sql="SELECT * FROM buku where "+cari+" like '%"+tcari.getText()+"%'";
                 stt=con.createStatement();
                 rss=stt.executeQuery(sql);
                 ResultSet rss=stt.executeQuery(sql);
                 while (rss.next()){
-                    Object[]o=new Object[9];
-                    o[0]=rss.getString("judul");
-                    o[1]=rss.getString("penulis");
-                    o[2]=rss.getString("harga");
-                    
-                
+                    Object[] o=new Object[4];
+                    o[0]=rss.getString("id");
+                    o[1]=rss.getString("judul");
+                    o[2]=rss.getString("penulis");
+                    o[3]=rss.getString("harga");
                     model.addRow(o);
                 }
                 stt.close();
@@ -380,15 +437,29 @@ private ResultSet rss;//untuk penampung data dari database
 
     private void btnubahActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnubahActionPerformed
         // TODO add your handling code here:
-        int baris=jTable2.getSelectedRow();
-        String judul_edit=jTable2.getValueAt(baris, 0).toString();
-        String penulis_edit=jTable2.getValueAt(baris,1).toString();
-        String harga_edit=jTable2.getValueAt(baris, 2).toString();
-        
-        tjudul.setText(judul_edit);
-        cmbpenulis.setSelectedItem(penulis_edit);
-        tharga.setText(harga_edit);
+        int baris = jTable2.getSelectedRow();
+        String id = jTable2.getValueAt(baris,0).toString();
+        String judul = tjudul.getText();
+        String penulis = cmbpenulis.getSelectedItem().toString();
+        String harga = tharga.getText();
+        if(validasi(judul, penulis)){
+            JOptionPane.showMessageDialog(null,"Data Sudah Ada");
+        }
+        else{
+            UbahData(id, judul, penulis, harga);
+            JOptionPane.showConfirmDialog(null,"Berhasil Ubah Data");
+        InitTable();TampilData();
+        }
     }//GEN-LAST:event_btnubahActionPerformed
+
+    private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
+        // TODO add your handling code here:
+        int baris = jTable2.getSelectedRow();
+        
+        tjudul.setText(jTable2.getValueAt(baris, 1).toString());
+        cmbpenulis.setSelectedItem(jTable2.getValueAt(baris, 2).toString());
+        tharga.setText(jTable2.getValueAt(baris, 3).toString());
+    }//GEN-LAST:event_jTable2MouseClicked
 
     /**
      * @param args the command line arguments
@@ -435,8 +506,8 @@ private ResultSet rss;//untuk penampung data dari database
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

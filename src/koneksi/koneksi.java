@@ -2,6 +2,7 @@ package koneksi;
 
 import java.sql.*;
 import javax.swing.JOptionPane;
+
 public class koneksi {
     private static Connection con;
     public static Connection getConnection(){
